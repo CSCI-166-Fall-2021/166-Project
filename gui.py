@@ -3,8 +3,35 @@ from tkinter import *
 from functools import partial
 from tkinter import messagebox
 from copy import deepcopy
+import numpy as np
 
 from game import Game, minimax, maxValue, minValue
+
+def getWinner(game):
+    state = game.board
+    # Check rows/cols
+    for board in [state, np.transpose(state)]:
+        for row in board:
+            temp = set(row)
+            if (len(temp)) == 1: # If row only has one symbol
+                if not(row[0] == 0): # If row is not empty
+                    return row[0] # Either filled with x's or o's
+
+    # Check diagonals
+    diagonal = [state[i][i] for i in range(game.size)]
+    temp = set(diagonal)
+    if (len(temp)) == 1: # If row only has one symbol
+        if not(diagonal[0] == 0): # If row is not empty
+            return diagonal[0] # Either filled with x's or o's
+
+    diagonal = [state[game.size - 1 - i][i] for i in range(game.size)]
+    temp = set(diagonal)
+    if (len(temp)) == 1: # If row only has one symbol
+        if not(diagonal[0] == 0): # If row is not empty
+            return diagonal[0] # Either filled with x's or o's
+
+    # Tie
+    return 0
 
 def placeMarker(gameboard, game, row, col):
     # Create checkValidMove function in game.py
@@ -15,13 +42,33 @@ def placeMarker(gameboard, game, row, col):
 
     game.board[row][col] = 2
     buttons[row][col].config(text="X")
-
     gameboard.update()
+
+    # Check terminal
+    if game.isTerminal(game.board):
+        winner = getWinner(game)
+        gameboard.destroy()
+        if winner == 0:
+            box = messagebox.showinfo("Tie", "Tie Game")
+        elif winner == 1:
+            box = messagebox.showinfo("Winner", "O won")
+        else:
+            box = messagebox.showinfo("Winner", "X won")
 
     aiAction = minimax(game, game.board)
 
     game.board[aiAction[0]][aiAction[1]] = 1
     buttons[aiAction[0]][aiAction[1]].config(text="O")
+
+    if game.isTerminal(game.board):
+        winner = getWinner(game)
+        gameboard.destroy()
+        if winner == 0:
+            box = messagebox.showinfo("Tie", "Tie Game")
+        elif winner == 1:
+            box = messagebox.showinfo("Winner", "X won")
+        else:
+            box = messagebox.showinfo("Winner", "O won")
 
     for i in range(game.size):
         for j in range(game.size):
