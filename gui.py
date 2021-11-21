@@ -6,7 +6,7 @@ from copy import deepcopy
 import numpy as np
 import time
 
-from game import Game, minimax, maxValue, minValue
+from game import Game, minimax, maxValue, minValue, alphaBeta, maxValueAB, minValueAB
 
 def getWinner(game):
     state = game.board
@@ -65,7 +65,8 @@ def placeMarker(gameboard, game, row, col):
     # AI move
     l2.config(text="Thinking...")
     gameboard.update()
-    aiAction = minimax(game, game.board, 2)
+    #aiAction = minimax(game, game.board, 2)
+    aiAction = alphaBeta(game, game.board, 2)
     l2.config(text="Computer : O")
     gameboard.update()
     game.board[aiAction[0]][aiAction[1]] = 2
@@ -79,7 +80,6 @@ def placeMarker(gameboard, game, row, col):
         for j in range(game.size):
             if game.board[i][j] == 0:
                 buttons[i][j].config(state=ACTIVE)
-
 
 def drawBoard(gameboard, game):
     global buttons
@@ -100,7 +100,8 @@ def drawBoard(gameboard, game):
     if firstTurnAI:
         l2.config(text="Thinking...")
         gameboard.update()
-        aiAction = minimax(game, game.board, 2)
+        #aiAction = minimax(game, game.board, 2)
+        aiAction = alphaBeta(game, game.board, 2)
         l2.config(text="Computer : O")
         gameboard.update()
         game.board[aiAction[0]][aiAction[1]] = 2
