@@ -33,6 +33,17 @@ def getWinner(game):
     # Tie
     return 0
 
+def checkGameEnd(gameboard, game):
+    if game.isTerminal(game.board):
+        winner = getWinner(game)
+        #gameboard.destroy()
+        if winner == 0:
+            box = messagebox.showinfo("Tie", "Tie Game")
+        elif winner == 1:
+            box = messagebox.showinfo("Winner", "Player 1 Won")
+        else:
+            box = messagebox.showinfo("Winner", "Player 2 Won")
+
 def placeMarker(gameboard, game, row, col):
     # Create checkValidMove function in game.py
     # Maybe makeMove function that calls checkValid?
@@ -40,35 +51,19 @@ def placeMarker(gameboard, game, row, col):
         for j in range(game.size):
             buttons[i][j].config(state=DISABLED)
 
-    game.board[row][col] = 2
+    game.board[row][col] = 1
     buttons[row][col].config(text="X")
     gameboard.update()
 
     # Check terminal
-    if game.isTerminal(game.board):
-        winner = getWinner(game)
-        gameboard.destroy()
-        if winner == 0:
-            box = messagebox.showinfo("Tie", "Tie Game")
-        elif winner == 1:
-            box = messagebox.showinfo("Winner", "O won")
-        else:
-            box = messagebox.showinfo("Winner", "X won")
+    checkGameEnd(gameboard, game)
 
-    aiAction = minimax(game, game.board)
+    aiAction = minimax(game, game.board, 2)
 
-    game.board[aiAction[0]][aiAction[1]] = 1
+    game.board[aiAction[0]][aiAction[1]] = 2
     buttons[aiAction[0]][aiAction[1]].config(text="O")
 
-    if game.isTerminal(game.board):
-        winner = getWinner(game)
-        gameboard.destroy()
-        if winner == 0:
-            box = messagebox.showinfo("Tie", "Tie Game")
-        elif winner == 1:
-            box = messagebox.showinfo("Winner", "X won")
-        else:
-            box = messagebox.showinfo("Winner", "O won")
+    checkGameEnd(gameboard, game)
 
     for i in range(game.size):
         for j in range(game.size):
@@ -85,7 +80,7 @@ def drawBoard(gameboard, game):
             mm = partial(placeMarker, gameboard, game, i, j)
             buttons[i].append(
                 Button(
-                gameboard, command=mm)
+                gameboard, command=mm, font=("OCR A Extended", 40))
             )
             buttons[i][j].grid(row=i+3, column=j, sticky="NSWE")
             gameboard.grid_columnconfigure(j, weight=1)
@@ -102,10 +97,10 @@ def playerVsAI(gameboard):
     gameboard = Tk()
     gameboard.geometry("1080x720")
     gameboard.title("Tic Tac Toe")
-    l1 = Button(gameboard, text="Player : X")
+    l1 = Button(gameboard, text="Player : X", font=("Arial", 25))
     l1.grid(row=1, columnspan=3, sticky="NSWE")
     l2 = Button(gameboard, text = "Computer : O",
-                state = DISABLED)
+                state = DISABLED, font=("Arial", 25))
     l2.grid(row = 2, columnspan=3, sticky="NSWE")
 
     gameboard.grid_rowconfigure(1, weight=1)

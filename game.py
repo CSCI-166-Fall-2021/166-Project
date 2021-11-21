@@ -49,12 +49,12 @@ class Game:
         #Return actions here 
         return possibleActions
 
-    def utility(self, state):
+    def utility(self, state, player):
         # Row/Col filled
         for board in [state, np.transpose(state)]:
             for row in board:
                 if self.checkValues(row):
-                    if (row[0] == 1):
+                    if (row[0] == player):
                         return 100
                     else:
                         return -100
@@ -63,12 +63,12 @@ class Game:
         diagonal1 = [state[i][i] for i in range(self.size)]
         diagonal2 = [state[self.size - 1 - i][i] for i in range(self.size)]
         if self.checkValues(diagonal1):
-            if (diagonal1[0] == 1):
+            if (diagonal1[0] == player):
                 return 100
             else:
                 return -100
         elif self.checkValues(diagonal2):
-            if (diagonal2[0] == 1):
+            if (diagonal2[0] == player):
                 return 100
             else:
                 return -100
@@ -82,62 +82,63 @@ class Game:
         newState[i][j] = player
         return newState
 
-def minimax(game, state):   
+def minimax(game, state, player):   
     #player <- game.To-Move(state)
     #value, move <Max-Value(game, state)
     #return move
-    (value, move) = maxValue(game, state)
+    (value, move) = maxValue(game, state, player)
     return move
 
-def maxValue(game, state):
+def maxValue(game, state, player):
     #Checks if board is in terminal state
     if game.isTerminal(state):
         #print("terminal")
-        return (game.utility(state), None)
+        return (game.utility(state, player), None)
     
     value = -math.inf       # value = -infinty
     actions = game.getActions(state)
     move = actions[0]
     #find best move for AI
     for a in actions:
-        v2, a2 = minValue(game, game.result(state, a, 1))
+        v2, a2 = minValue(game, game.result(state, a, player), player)
         if v2 > value:
             value = v2
             move = a
     #returns 
     return (value, move)
 
-def minValue(game, state):
+def minValue(game, state, player):
+    oppositePlayers = {1:2, 2:1}
     #Checks if board is in terminal stpyate
     if game.isTerminal(state):
-        return (game.utility(state), None)
+        return (game.utility(state, player), None)
 
     actions = game.getActions(state)
     move = actions[0]
     value = math.inf   # value = infinity
     for a in actions:
-        v2, a2 = maxValue(game, game.result(state, a, 2))
+        v2, a2 = maxValue(game, game.result(state, a, oppositePlayers[player]), player)
         if v2 < value:
             value = v2
             move = a
     #returns 
     return (value, move)   
 
-def alphaBeta(game, state):
-    (value, move) = maxValueAB(game, state, -math.inf, math.inf)
+def alphaBeta(game, state, player):
+    (value, move) = maxValueAB(game, state, player, -math.inf, math.inf)
     return move
 
-def maxValueAB(game, state, alpha, beta):
+def maxValueAB(game, state, player, alpha, beta):
     #Checks if board is in terminal state
     if game.isTerminal(state):
-        return (game.utility(state), None)
+        return (game.utility(state, player), None)
     
     value = -math.inf       # value = -infinty
     actions = game.getActions(state)
     move = actions[0]
     #find best move for AI
     for a in actions:
-        v2, a2 = minValueAB(game, game.result(state, a, 1), alpha, beta)
+        v2, a2 = minValueAB(game, game.result(state, a, player), player, alpha, beta)
         if v2 > value:
             value = v2
             move = a
@@ -147,17 +148,18 @@ def maxValueAB(game, state, alpha, beta):
     #returns 
     return (value, move)
 
-def minValueAB(game, state, alpha, beta):
+def minValueAB(game, state, player, alpha, beta):
+    oppositePlayers = {1:2, 2:1}
     #Checks if board is in terminal state
     if game.isTerminal(state):
-        return (game.utility(state), None)
+        return (game.utility(state, player), None)
     
     value = math.inf       # value = -infinty
     actions = game.getActions(state)
     move = actions[0]
     #find best move for AI
     for a in actions:
-        v2, a2 = maxValueAB(game, game.result(state, a, 2), alpha, beta)
+        v2, a2 = maxValueAB(game, game.result(state, a, oppositePlayers[player]), player, alpha, beta)
         if v2 < value:
             value = v2
             move = a
@@ -178,11 +180,11 @@ if __name__ == "__main__":
     
     while not(tictactoe.isTerminal(tictactoe.board)):
         start = time.time()
-        aiAction = minimax(tictactoe, tictactoe.board)
+        aiAction = minimax(tictactoe, tictactoe.board, 1)
         print("Time Taken (No Pruning):", time.time() - start)
 
         start = time.time()
-        aiActionAB = alphaBeta(tictactoe, tictactoe.board)
+        aiActionAB = alphaBeta(tictactoe, tictactoe.board, 1)
         print("Time Taken (Pruning):", time.time() - start)
 
         print(aiAction)
