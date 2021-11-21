@@ -8,6 +8,26 @@ class Game:
         self.board = np.zeros([size, size])
         self.size = size
     
+    def checkMove(self, row, col):
+    #Returns false if move is out of bounds
+        if row < 0 or row >= self.size:
+            return False
+        if col < 0 or col >= self.size:
+            return False
+        return True
+    
+    def display(self):
+        n = self.size
+        for i in range(n):
+            for j in range(n):
+                if self.board[i][j] == 0:
+                    print("_", end=' ')
+                elif self.board[i][j] == 1:
+                    print("O", end=' ')
+                else:
+                     print("X", end=' ')               
+            print() 
+    
     def isTerminal(self, state):
         return self.checkRowsCols(state) or self.checkDiagonals(state) or self.checkFull(state)
     
@@ -169,16 +189,17 @@ def minValueAB(game, state, player, alpha, beta):
     #returns 
     return (value, move)
 
+
 if __name__ == "__main__":
     tictactoe = Game(3)
     print("Initial Board:\n", tictactoe.board)
-    # tictactoe.board = np.array([[1,1,2,1],
-    # [0,1,1,0],
-    # [2,0,1,0],
-    # [0,0,0,0]])
-    # print("Initial Board:\n", tictactoe.board)
-    
+    print()
+    print("Initial Board with X's and O's:")
+    tictactoe.display()
+    validMove = False
+
     while not(tictactoe.isTerminal(tictactoe.board)):
+        validMove = False
         start = time.time()
         aiAction = minimax(tictactoe, tictactoe.board, 1)
         print("Time Taken (No Pruning):", time.time() - start)
@@ -186,7 +207,7 @@ if __name__ == "__main__":
         start = time.time()
         aiActionAB = alphaBeta(tictactoe, tictactoe.board, 1)
         print("Time Taken (Pruning):", time.time() - start)
-
+        
         print(aiAction)
         print(aiActionAB)
         #tictactoe.board = tictactoe.result(tictactoe.board, aiAction, 1)
@@ -196,13 +217,30 @@ if __name__ == "__main__":
             break
 
         print("Current Board:\n", tictactoe.board)
+        print()
+        print("Current Board:")
+        tictactoe.display()
+        print()
         
-        playerRow = int(input("Enter row:"))
-        playerCol = int(input("Enter col:"))
+        while not(validMove):
+            playerRow = int(input("Enter row:"))
+            playerCol = int(input("Enter col:"))
+            validMove = tictactoe.checkMove(playerRow, playerCol)
+            if (validMove == False):
+                print("Invalid move!")
 
         playerMove = (playerRow, playerCol)
         print("Player Move:", playerMove)
         tictactoe.board = tictactoe.result(tictactoe.board, playerMove, 2)
         print("Current Board:\n", tictactoe.board)
+        print()
+        print("Current Board:")
+        tictactoe.display()
+        print()
+
 
     print("Final Board:\n", tictactoe.board)
+    print()
+    print("Final Board:")
+    tictactoe.display()
+    
