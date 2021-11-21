@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import random
+import time
 
 class Game:
     def __init__(self, size):
@@ -15,13 +16,12 @@ class Game:
         if (len(temp)) == 1: # If row only has one symbol
             if not(list[0] == 0): # If row is not empty
                 return True # Either filled with x's or o's
-        return None
 
     def checkRowsCols(self, state):
         # Check rows in self.board and cols using transpose
         for board in [state, np.transpose(state)]:
             for row in board:
-                if self.checkValues(row) == True:
+                if self.checkValues(row):
                     return True
         return False
 
@@ -82,8 +82,7 @@ class Game:
         newState[i][j] = player
         return newState
 
-def minimax(game, state):
-    player = 1     
+def minimax(game, state):   
     #player <- game.To-Move(state)
     #value, move <Max-Value(game, state)
     #return move
@@ -124,19 +123,72 @@ def minValue(game, state):
     #returns 
     return (value, move)   
 
+def alphaBeta(game, state):
+    (value, move) = maxValueAB(game, state, -math.inf, math.inf)
+    return move
+
+def maxValueAB(game, state, alpha, beta):
+    #Checks if board is in terminal state
+    if game.isTerminal(state):
+        return (game.utility(state), None)
+    
+    value = -math.inf       # value = -infinty
+    actions = game.getActions(state)
+    move = actions[0]
+    #find best move for AI
+    for a in actions:
+        v2, a2 = minValueAB(game, game.result(state, a, 1), alpha, beta)
+        if v2 > value:
+            value = v2
+            move = a
+            alpha = max([alpha, value])
+        if value >= beta:
+            return (value, move)
+    #returns 
+    return (value, move)
+
+def minValueAB(game, state, alpha, beta):
+    #Checks if board is in terminal state
+    if game.isTerminal(state):
+        return (game.utility(state), None)
+    
+    value = math.inf       # value = -infinty
+    actions = game.getActions(state)
+    move = actions[0]
+    #find best move for AI
+    for a in actions:
+        v2, a2 = maxValueAB(game, game.result(state, a, 2), alpha, beta)
+        if v2 < value:
+            value = v2
+            move = a
+            beta = min([beta, value])
+        if value <= alpha:
+            return (value, move)
+    #returns 
+    return (value, move)
+
 if __name__ == "__main__":
-    tictactoe = Game(4)
+    tictactoe = Game(3)
     print("Initial Board:\n", tictactoe.board)
-    tictactoe.board = np.array([[1,1,2,1],
-    [0,1,1,0],
-    [2,0,1,0],
-    [0,0,0,0]])
-    print("Initial Board:\n", tictactoe.board)
+    # tictactoe.board = np.array([[1,1,2,1],
+    # [0,1,1,0],
+    # [2,0,1,0],
+    # [0,0,0,0]])
+    # print("Initial Board:\n", tictactoe.board)
     
     while not(tictactoe.isTerminal(tictactoe.board)):
+        start = time.time()
         aiAction = minimax(tictactoe, tictactoe.board)
+        print("Time Taken (No Pruning):", time.time() - start)
+
+        start = time.time()
+        aiActionAB = alphaBeta(tictactoe, tictactoe.board)
+        print("Time Taken (Pruning):", time.time() - start)
+
         print(aiAction)
-        tictactoe.board = tictactoe.result(tictactoe.board, aiAction, 1)
+        print(aiActionAB)
+        #tictactoe.board = tictactoe.result(tictactoe.board, aiAction, 1)
+        tictactoe.board = tictactoe.result(tictactoe.board, aiActionAB, 1)
 
         if (tictactoe.isTerminal(tictactoe.board)):
             break
