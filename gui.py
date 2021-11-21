@@ -4,6 +4,7 @@ from functools import partial
 from tkinter import messagebox
 from copy import deepcopy
 import numpy as np
+import time
 
 from game import Game, minimax, maxValue, minValue
 
@@ -39,32 +40,41 @@ def checkGameEnd(gameboard, game):
         #gameboard.destroy()
         if winner == 0:
             box = messagebox.showinfo("Tie", "Tie Game")
+            playerVsAI(gameboard)
         elif winner == 1:
             box = messagebox.showinfo("Winner", "Player 1 Won")
+            playerVsAI(gameboard)
         else:
             box = messagebox.showinfo("Winner", "Player 2 Won")
+            playerVsAI(gameboard)
 
 def placeMarker(gameboard, game, row, col):
-    # Create checkValidMove function in game.py
-    # Maybe makeMove function that calls checkValid?
+    # Disable all buttons so player can't keep placing before AI makes its move
     for i in range(game.size):
         for j in range(game.size):
             buttons[i][j].config(state=DISABLED)
 
+    # Player move
     game.board[row][col] = 1
     buttons[row][col].config(text="X")
     gameboard.update()
 
-    # Check terminal
+    # Check if game is over
     checkGameEnd(gameboard, game)
 
+    # AI move
+    l2.config(text="Thinking...")
+    gameboard.update()
     aiAction = minimax(game, game.board, 2)
-
+    l2.config(text="Computer : O")
+    gameboard.update()
     game.board[aiAction[0]][aiAction[1]] = 2
     buttons[aiAction[0]][aiAction[1]].config(text="O")
 
+    # Check if game is over
     checkGameEnd(gameboard, game)
 
+    # Reenable buttons when it is player's turn again
     for i in range(game.size):
         for j in range(game.size):
             if game.board[i][j] == 0:
@@ -86,6 +96,16 @@ def drawBoard(gameboard, game):
             gameboard.grid_columnconfigure(j, weight=1)
             gameboard.grid_rowconfigure(i+3, weight=1)
 
+    firstTurnAI = np.random.randint(0,2)
+    if firstTurnAI:
+        l2.config(text="Thinking...")
+        gameboard.update()
+        aiAction = minimax(game, game.board, 2)
+        l2.config(text="Computer : O")
+        gameboard.update()
+        game.board[aiAction[0]][aiAction[1]] = 2
+        buttons[aiAction[0]][aiAction[1]].config(text="O")
+
     while True:
         #print(game.board)
         gameboard.update_idletasks()
@@ -97,10 +117,12 @@ def playerVsAI(gameboard):
     gameboard = Tk()
     gameboard.geometry("1080x720")
     gameboard.title("Tic Tac Toe")
-    l1 = Button(gameboard, text="Player : X", font=("Arial", 25))
+    global l1
+    global l2
+    l1 = Button(gameboard, text="Player : X", font=("OCR A Extended", 20), state = DISABLED)
     l1.grid(row=1, columnspan=3, sticky="NSWE")
     l2 = Button(gameboard, text = "Computer : O",
-                state = DISABLED, font=("Arial", 25))
+                state = DISABLED, font=("OCR A Extended", 20))
     l2.grid(row = 2, columnspan=3, sticky="NSWE")
 
     gameboard.grid_rowconfigure(1, weight=1)
@@ -109,7 +131,7 @@ def playerVsAI(gameboard):
     tictactoe = Game(3)
     drawBoard(gameboard, tictactoe)
 
-if __name__ == "__main__":
+def menu():
     menu = Tk()
     menu.geometry("1080x720")
     menu.title("Tic Tac Toe")
@@ -118,17 +140,17 @@ if __name__ == "__main__":
     head = Button(menu, text = "Tic-Tac-Toe",
                 activeforeground = 'blue',
                 activebackground = "blue", bg = "blue",
-                fg = "white", font = 'helvetica')
+                fg = "white", font = ("OCR A Extended", 40))
     
     B1 = Button(menu, text = "Player vs. AI", command = pvai,
                 activeforeground = 'red',
                 activebackground = "yellow", bg = "red",
-                fg = "white", font = 'summer')
+                fg = "white", font = ("OCR A Extended", 40))
     
     B2 = Button(menu, text = "AI vs. AI", command = pvai,
                 activeforeground = 'red',
                 activebackground = "yellow", bg = "red",
-                fg = "white", font = 'summer')
+                fg = "white", font = ("OCR A Extended", 40))
     
     menu.grid_columnconfigure(1, weight=1)
     menu.grid_rowconfigure(1, weight=1)
@@ -139,3 +161,6 @@ if __name__ == "__main__":
     B2.grid(row=3, column=1, sticky="NSWE")
 
     menu.mainloop()
+
+if __name__ == "__main__":
+    menu()
