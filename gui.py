@@ -140,18 +140,18 @@ def menu():
 
     head = Button(menu, text = "Tic-Tac-Toe",
                 activeforeground = 'blue',
-                activebackground = "blue", bg = "blue",
-                fg = "white", font = ("OCR A Extended", 40))
+                activebackground = "silver", bg = "white",
+                fg = "black", font = ("OCR A Extended", 40), state=DISABLED)
     
     B1 = Button(menu, text = "Player vs. AI", command = pvai,
                 activeforeground = 'red',
-                activebackground = "yellow", bg = "red",
-                fg = "white", font = ("OCR A Extended", 40))
+                activebackground = "silver", bg = "white",
+                fg = "black", font = ("OCR A Extended", 40))
     
     B2 = Button(menu, text = "AI vs. AI", command = pvai,
                 activeforeground = 'red',
-                activebackground = "yellow", bg = "red",
-                fg = "white", font = ("OCR A Extended", 40))
+                activebackground = "silver", bg = "white",
+                fg = "black", font = ("OCR A Extended", 40))
     
     menu.grid_columnconfigure(1, weight=1)
     menu.grid_rowconfigure(1, weight=1)
