@@ -7,10 +7,14 @@ import numpy as np
 import time
 
 from game import Game, minimax, maxValue, minValue, alphaBeta, maxValueAB, minValueAB, alphaBetaDepth, maxValueABDepth, minValueABDepth
+from game import minimaxDepth, minValueDepth, maxValueDepth
 
+global font 
 font = ("OCR A Extended", 40)
+global defaultDepth 
 defaultDepth = 6
-alphaBeta = True
+global alphaBetaOption
+alphaBetaOption = True
 
 def getWinner(game):
     state = game.board
@@ -55,7 +59,6 @@ def checkGameEnd(gameboard, game, type):
             gameboard.destroy()
             menu()
             
-
 def placeMarker(gameboard, game, row, col, maxDepth):
     # Disable all buttons so player can't keep placing before AI makes its move
     for i in range(game.size):
@@ -75,7 +78,9 @@ def placeMarker(gameboard, game, row, col, maxDepth):
     gameboard.update()
     #aiAction = minimax(game, game.board, 2)
     #aiAction = alphaBeta(game, game.board, 2)
-    aiAction = alphaBetaDepth(game, game.board, 2, 1, maxDepth)
+    #aiAction = alphaBetaDepth(game, game.board, 2, 1, maxDepth)
+    global alphaBetaOption
+    aiAction = getAiAction(gameboard, game, 2, 1, maxDepth, alphaBetaOption)
     l2.config(text="Computer : O")
     gameboard.update()
     game.board[aiAction[0]][aiAction[1]] = 2
@@ -89,6 +94,12 @@ def placeMarker(gameboard, game, row, col, maxDepth):
         for j in range(game.size):
             if game.board[i][j] == 0:
                 buttons[i][j].config(state=ACTIVE)
+
+def getAiAction(gameboard, game, player, currDepth, maxDepth, ABOption):
+    if ABOption:
+        return alphaBetaDepth(game, game.board, player, currDepth, maxDepth)
+    else:
+        return minimaxDepth(game, game.board, player, currDepth, maxDepth)
 
 def drawBoard(gameboard, game, maxDepth):
     global buttons
@@ -115,7 +126,9 @@ def drawBoard(gameboard, game, maxDepth):
         gameboard.update()
         #aiAction = minimax(game, game.board, 2)``
         #aiAction = alphaBeta(game, game.board, 2)
-        aiAction = alphaBetaDepth(game, game.board, 2, 1, maxDepth)
+        #aiAction = alphaBetaDepth(game, game.board, 2, 1, maxDepth)
+        global alphaBetaOption
+        aiAction = getAiAction(gameboard, game, 2, 1, maxDepth, alphaBetaOption)
         l2.config(text="Computer : O")
         gameboard.update()
         game.board[aiAction[0]][aiAction[1]] = 2
@@ -187,7 +200,9 @@ def AIVsAI(gameboard, size, maxDepth):
         gameboard.update()
         #aiAction = minimax(game, game.board, 2)
         #aiAction = alphaBeta(game, game.board, 1)
-        aiAction = alphaBetaDepth(game, game.board, 1, 1, maxDepth)
+        #aiAction = alphaBetaDepth(game, game.board, 1, 1, maxDepth)
+        global alphaBetaOption
+        aiAction = getAiAction(gameboard, game, 1, 1, maxDepth, alphaBetaOption)
         l1.config(text="Computer 1: X")
         gameboard.update()
         game.board[aiAction[0]][aiAction[1]] = 1
@@ -202,7 +217,8 @@ def AIVsAI(gameboard, size, maxDepth):
         gameboard.update()
         #aiAction = minimax(game, game.board, 2)
         #aiAction = alphaBeta(game, game.board, 2)
-        aiAction = alphaBetaDepth(game, game.board, 2, 1, maxDepth)
+        #aiAction = alphaBetaDepth(game, game.board, 2, 1, maxDepth)
+        aiAction = getAiAction(gameboard, game, 2, 1, maxDepth, alphaBetaOption)
         l2.config(text="Computer 2: O")
         gameboard.update()
         game.board[aiAction[0]][aiAction[1]] = 2
@@ -289,27 +305,54 @@ def inputSize(menu, choice, maxDepth):
     newRoot.grid_columnconfigure(1, weight=1)
     newRoot.mainloop()
 
-def settings(menu):
-    menu.destroy()
+def settingsMenu(menuWindow):
+    global font
+    menuWindow.destroy()
     settings = Tk()
     settings.geometry("1080x720")
     settings.title("Settings")
 
+    def lowerDepth():
+        global defaultDepth
+        defaultDepth -= 1
+        currDepth.config(text=defaultDepth)
+    def raiseDepth():
+        global defaultDepth
+        defaultDepth += 1
+        currDepth.config(text=defaultDepth)
+
     # depth limit - +/-
     depth = Button(settings, text="Depth Limit", state=DISABLED, font=font)
-    minusDepth = Button(settings, text="-", font=font)
+    minusDepth = Button(settings, text="-", font=font, command=lowerDepth)
     currDepth = Button(settings, text=defaultDepth, font=font)
-    plusDepth = Button(settings, text="+", font=font)
+    plusDepth = Button(settings, text="+", font=font, command=raiseDepth)
 
     depth.grid(row=1, column=1, sticky="NSEW")
     minusDepth.grid(row=1, column=2, sticky="NSEW")
     currDepth.grid(row=1, column=3, sticky="NSEW")
     plusDepth.grid(row=1, column=4, sticky="NSEW")
 
+    def alphaBetaOn():
+        global alphaBetaOption
+        alphaBetaOption = True
+        global ABOn
+        ABOn.config(state=DISABLED)
+        global ABOff
+        ABOff.config(state=ACTIVE)
+    def alphaBetaOff():
+        global alphaBetaOption
+        alphaBetaOption = False
+        global ABOff
+        ABOff.config(state=DISABLED)
+        global ABOn
+        ABOn.config(state=ACTIVE)
+
     # alpha beta - ON/OFF
+    global ABOn
+    global ABOff
     ABButton = Button(settings, text="Alpha-Beta Pruning", state=DISABLED, font=font)
-    ABOn = Button(settings, text="ON", state=DISABLED, font=font)
-    ABOff = Button(settings, text="OFF", font=font)
+    ABOn = Button(settings, text="ON", state=DISABLED, font=font, command=alphaBetaOn)
+    ABOff = Button(settings, text="OFF", font=font, command=alphaBetaOff)
 
     ABButton.grid(row=2, column=1, sticky="NSEW")
     ABOn.grid(row=2, column=2, sticky="NSEW")
@@ -317,16 +360,27 @@ def settings(menu):
 
     # heuristic? - ON/OFF
 
+    # back to menu
+    def backToMenu():
+        settings.destroy()
+        menu()
+    menuButton = Button(settings, text="Back to Menu", font=font, command=backToMenu)
+    menuButton.grid(row=3, column=1, sticky="NSEW")
+    while True:
+        #print(defaultDepth)
+        settings.update()
+        settings.update_idletasks()
+
 def menu():
     menu = Tk()
     menu.geometry("1080x720")
     menu.title("Tic Tac Toe")
 
-    maxDepth = 6
+    global defaultDepth
 
-    pvai = partial(size, menu, 0, maxDepth)
-    avai = partial(size, menu, 1, maxDepth)
-    sett = partial(settings, menu)
+    pvai = partial(size, menu, 0, defaultDepth)
+    avai = partial(size, menu, 1, defaultDepth)
+    sett = partial(settingsMenu, menu)
 
     #pvai = partial(inputSize, menu, 0)
     #avai = partial(inputSize, menu, 1)
