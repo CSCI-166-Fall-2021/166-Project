@@ -8,6 +8,7 @@ import time
 
 from game import Game, minimax, maxValue, minValue, alphaBeta, maxValueAB, minValueAB, alphaBetaDepth, maxValueABDepth, minValueABDepth
 from game import minimaxDepth, minValueDepth, maxValueDepth
+from game import alphaBetaDepthHeuristic, minValueABDepthHeuristic, maxValueABDepthHeuristic
 
 global font 
 font = ("OCR A Extended", 40)
@@ -15,6 +16,8 @@ global defaultDepth
 defaultDepth = 6
 global alphaBetaOption
 alphaBetaOption = True
+global heuristicOption
+heuristicOption = True
 
 def getWinner(game):
     state = game.board
@@ -96,7 +99,10 @@ def placeMarker(gameboard, game, row, col, maxDepth):
                 buttons[i][j].config(state=ACTIVE)
 
 def getAiAction(gameboard, game, player, currDepth, maxDepth, ABOption):
+    global heuristicOption
     if ABOption:
+        if heuristicOption:
+            return alphaBetaDepthHeuristic(game, game.board, player, currDepth, maxDepth)
         return alphaBetaDepth(game, game.board, player, currDepth, maxDepth)
     else:
         return minimaxDepth(game, game.board, player, currDepth, maxDepth)

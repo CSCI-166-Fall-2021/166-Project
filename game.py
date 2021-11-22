@@ -102,6 +102,24 @@ class Game:
         newState[i][j] = player
         return newState
 
+    def heuristic(self, state, player):
+        # number of possible winning rows/cols/diagonals
+        oppositePlayers = {1:2, 2:1}
+        possibleWins = 0
+        for board in [state, np.transpose(state)]:
+            for row in board:
+                if oppositePlayers[player] not in row:
+                    possibleWins += 1
+
+        diagonal1 = [state[i][i] for i in range(self.size)]
+        diagonal2 = [state[self.size - 1 - i][i] for i in range(self.size)]
+        if oppositePlayers[player] not in diagonal1:
+            possibleWins += 1
+        if oppositePlayers[player] not in diagonal2:
+            possibleWins += 1
+        
+        return possibleWins
+
 def minimax(game, state, player):   
     #player <- game.To-Move(state)
     #value, move <Max-Value(game, state)
@@ -276,6 +294,54 @@ def minValueABDepth(game, state, player, alpha, beta, currDepth, maxDepth):
     #returns 
     return (value, move)
 
+def alphaBetaDepthHeuristic(game, state, player, currDepth, maxDepth):
+    (value, move) = maxValueABDepthHeuristic(game, state, player, -math.inf, math.inf, currDepth, maxDepth)
+    return move
+
+def maxValueABDepthHeuristic(game, state, player, alpha, beta, currDepth, maxDepth):
+    #Checks if board is in terminal state
+    if game.isTerminal(state):
+        return (game.utility(state, player), None)
+    if currDepth == maxDepth:
+        return (game.heuristic(state, player), None)
+    
+    value = -math.inf       # value = -infinty
+    actions = game.getActions(state)
+    move = actions[0]
+    #find best move for AI
+    for a in actions:
+        v2, a2 = minValueABDepthHeuristic(game, game.result(state, a, player), player, alpha, beta, currDepth+1, maxDepth)
+        if v2 > value:
+            value = v2
+            move = a
+            alpha = max([alpha, value])
+        if value >= beta:
+            return (value, move)
+    #returns 
+    return (value, move)
+
+def minValueABDepthHeuristic(game, state, player, alpha, beta, currDepth, maxDepth):
+    oppositePlayers = {1:2, 2:1}
+    #Checks if board is in terminal state
+    if game.isTerminal(state):
+        return (game.utility(state, player), None)
+    if currDepth == maxDepth:
+        return (game.heuristic(state, player), None)
+    
+    value = math.inf       # value = -infinty
+    actions = game.getActions(state)
+    move = actions[0]
+    #find best move for AI
+    for a in actions:
+        v2, a2 = maxValueABDepthHeuristic(game, game.result(state, a, oppositePlayers[player]), player, alpha, beta, currDepth+1, maxDepth)
+        if v2 < value:
+            value = v2
+            move = a
+            beta = min([beta, value])
+        if value <= alpha:
+            return (value, move)
+    #returns 
+    return (value, move)
 
 if __name__ == "__main__":
     tictactoe = Game(3)
