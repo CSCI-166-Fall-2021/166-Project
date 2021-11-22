@@ -8,6 +8,10 @@ import time
 
 from game import Game, minimax, maxValue, minValue, alphaBeta, maxValueAB, minValueAB, alphaBetaDepth, maxValueABDepth, minValueABDepth
 
+font = ("OCR A Extended", 40)
+defaultDepth = 6
+alphaBeta = True
+
 def getWinner(game):
     state = game.board
     # Check rows/cols
@@ -285,6 +289,34 @@ def inputSize(menu, choice, maxDepth):
     newRoot.grid_columnconfigure(1, weight=1)
     newRoot.mainloop()
 
+def settings(menu):
+    menu.destroy()
+    settings = Tk()
+    settings.geometry("1080x720")
+    settings.title("Settings")
+
+    # depth limit - +/-
+    depth = Button(settings, text="Depth Limit", state=DISABLED, font=font)
+    minusDepth = Button(settings, text="-", font=font)
+    currDepth = Button(settings, text=defaultDepth, font=font)
+    plusDepth = Button(settings, text="+", font=font)
+
+    depth.grid(row=1, column=1, sticky="NSEW")
+    minusDepth.grid(row=1, column=2, sticky="NSEW")
+    currDepth.grid(row=1, column=3, sticky="NSEW")
+    plusDepth.grid(row=1, column=4, sticky="NSEW")
+
+    # alpha beta - ON/OFF
+    ABButton = Button(settings, text="Alpha-Beta Pruning", state=DISABLED, font=font)
+    ABOn = Button(settings, text="ON", state=DISABLED, font=font)
+    ABOff = Button(settings, text="OFF", font=font)
+
+    ABButton.grid(row=2, column=1, sticky="NSEW")
+    ABOn.grid(row=2, column=2, sticky="NSEW")
+    ABOff.grid(row=2, column=3, sticky="NSEW")
+
+    # heuristic? - ON/OFF
+
 def menu():
     menu = Tk()
     menu.geometry("1080x720")
@@ -294,6 +326,7 @@ def menu():
 
     pvai = partial(size, menu, 0, maxDepth)
     avai = partial(size, menu, 1, maxDepth)
+    sett = partial(settings, menu)
 
     #pvai = partial(inputSize, menu, 0)
     #avai = partial(inputSize, menu, 1)
@@ -315,13 +348,20 @@ def menu():
                 activebackground = "silver", bg = "white",
                 fg = "black", font = ("OCR A Extended", 40))
     
+    B3 = Button(menu, text = "Settings", command = sett,
+                activeforeground = 'red',
+                activebackground = "silver", bg = "gray",
+                fg = "black", font = ("OCR A Extended", 40))
+    
     menu.grid_columnconfigure(1, weight=1)
     menu.grid_rowconfigure(1, weight=1)
     menu.grid_rowconfigure(2, weight=5)
     menu.grid_rowconfigure(3, weight=5)
+    menu.grid_rowconfigure(4, weight=5)
     head.grid(row=1, column=1, sticky="NSWE")
     B1.grid(row=2, column=1, sticky="NSWE")
     B2.grid(row=3, column=1, sticky="NSWE")
+    B3.grid(row=4, column=1, sticky="NSWE")
 
     menu.mainloop()
 
