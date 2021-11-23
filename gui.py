@@ -82,8 +82,7 @@ def placeMarker(gameboard, game, row, col, maxDepth):
     #aiAction = minimax(game, game.board, 2)
     #aiAction = alphaBeta(game, game.board, 2)
     #aiAction = alphaBetaDepth(game, game.board, 2, 1, maxDepth)
-    global alphaBetaOption
-    aiAction = getAiAction(gameboard, game, 2, 1, maxDepth, alphaBetaOption)
+    aiAction = getAiAction(gameboard, game, 2, 1, maxDepth)
     l2.config(text="Computer : O")
     gameboard.update()
     game.board[aiAction[0]][aiAction[1]] = 2
@@ -98,9 +97,10 @@ def placeMarker(gameboard, game, row, col, maxDepth):
             if game.board[i][j] == 0:
                 buttons[i][j].config(state=ACTIVE)
 
-def getAiAction(gameboard, game, player, currDepth, maxDepth, ABOption):
+def getAiAction(gameboard, game, player, currDepth, maxDepth):
     global heuristicOption
-    if ABOption:
+    global alphaBetaOption
+    if alphaBetaOption:
         if heuristicOption:
             return alphaBetaDepthHeuristic(game, game.board, player, currDepth, maxDepth)
         return alphaBetaDepth(game, game.board, player, currDepth, maxDepth)
@@ -133,8 +133,7 @@ def drawBoard(gameboard, game, maxDepth):
         #aiAction = minimax(game, game.board, 2)``
         #aiAction = alphaBeta(game, game.board, 2)
         #aiAction = alphaBetaDepth(game, game.board, 2, 1, maxDepth)
-        global alphaBetaOption
-        aiAction = getAiAction(gameboard, game, 2, 1, maxDepth, alphaBetaOption)
+        aiAction = getAiAction(gameboard, game, 2, 1, maxDepth)
         l2.config(text="Computer : O")
         gameboard.update()
         game.board[aiAction[0]][aiAction[1]] = 2
@@ -207,8 +206,7 @@ def AIVsAI(gameboard, size, maxDepth):
         #aiAction = minimax(game, game.board, 2)
         #aiAction = alphaBeta(game, game.board, 1)
         #aiAction = alphaBetaDepth(game, game.board, 1, 1, maxDepth)
-        global alphaBetaOption
-        aiAction = getAiAction(gameboard, game, 1, 1, maxDepth, alphaBetaOption)
+        aiAction = getAiAction(gameboard, game, 1, 1, maxDepth)
         l1.config(text="Computer 1: X")
         gameboard.update()
         game.board[aiAction[0]][aiAction[1]] = 1
@@ -224,7 +222,7 @@ def AIVsAI(gameboard, size, maxDepth):
         #aiAction = minimax(game, game.board, 2)
         #aiAction = alphaBeta(game, game.board, 2)
         #aiAction = alphaBetaDepth(game, game.board, 2, 1, maxDepth)
-        aiAction = getAiAction(gameboard, game, 2, 1, maxDepth, alphaBetaOption)
+        aiAction = getAiAction(gameboard, game, 2, 1, maxDepth)
         l2.config(text="Computer 2: O")
         gameboard.update()
         game.board[aiAction[0]][aiAction[1]] = 2
@@ -333,10 +331,10 @@ def settingsMenu(menuWindow):
     currDepth = Button(settings, text=defaultDepth, font=font)
     plusDepth = Button(settings, text="+", font=font, command=raiseDepth)
 
-    depth.grid(row=1, column=1, sticky="NSEW")
-    minusDepth.grid(row=1, column=2, sticky="NSEW")
-    currDepth.grid(row=1, column=3, sticky="NSEW")
-    plusDepth.grid(row=1, column=4, sticky="NSEW")
+    depth.grid(row=1, column=1, sticky="NESW")
+    minusDepth.grid(row=1, column=2, columnspan=2, sticky="NSEW")
+    currDepth.grid(row=1, column=4, columnspan=2, sticky="NSEW")
+    plusDepth.grid(row=1, column=6, columnspan=2, sticky="NSEW")
 
     def alphaBetaOn():
         global alphaBetaOption
@@ -361,17 +359,55 @@ def settingsMenu(menuWindow):
     ABOff = Button(settings, text="OFF", font=font, command=alphaBetaOff)
 
     ABButton.grid(row=2, column=1, sticky="NSEW")
-    ABOn.grid(row=2, column=2, sticky="NSEW")
-    ABOff.grid(row=2, column=3, sticky="NSEW")
+    ABOn.grid(row=2, column=2, columnspan=3, sticky="NSEW")
+    ABOff.grid(row=2, column=5, columnspan=3, sticky="NSEW")
 
     # heuristic? - ON/OFF
+    def heuristicOn():
+        global heuristicOption
+        heuristicOption = True
+        global heuristicON
+        heuristicON.config(state=DISABLED)
+        global heuristicOFF
+        heuristicOFF.config(state=ACTIVE)
+    def heuristicOff():
+        global heuristicOption
+        heuristicOption = False
+        global heuristicON
+        heuristicON.config(state=ACTIVE)
+        global heuristicOFF
+        heuristicOFF.config(state=DISABLED)
+
+    global heuristicON
+    global heuristicOFF
+    heuristicButton = Button(settings, text="Heuristic", state=DISABLED, font=font)
+    heuristicON = Button(settings, text="ON", state=DISABLED, font=font, command=heuristicOn)
+    heuristicOFF = Button(settings, text="OFF", font=font, command=heuristicOff)
+
+    heuristicButton.grid(row=3, column=1, sticky="NSEW")
+    heuristicON.grid(row=3, column=2, columnspan=3, sticky="NSEW")
+    heuristicOFF.grid(row=3, column=5, columnspan=3, sticky="NSEW")
 
     # back to menu
     def backToMenu():
         settings.destroy()
         menu()
     menuButton = Button(settings, text="Back to Menu", font=font, command=backToMenu)
-    menuButton.grid(row=3, column=1, sticky="NSEW")
+    menuButton.grid(row=4, column=1, columnspan=7, sticky="NSEW")
+
+    # row/col configure
+    settings.grid_rowconfigure(1, weight=1, uniform="foo")
+    settings.grid_rowconfigure(2, weight=1, uniform="foo")
+    settings.grid_rowconfigure(3, weight=1, uniform="foo")
+    settings.grid_rowconfigure(4, weight=1, uniform="foo")
+    settings.grid_columnconfigure(1, weight=10, uniform="foo")
+    settings.grid_columnconfigure(2, weight=1, uniform="foo")
+    settings.grid_columnconfigure(3, weight=1, uniform="foo")
+    settings.grid_columnconfigure(4, weight=1, uniform="foo")
+    settings.grid_columnconfigure(5, weight=1, uniform="foo")
+    settings.grid_columnconfigure(6, weight=1, uniform="foo")
+    settings.grid_columnconfigure(7, weight=1, uniform="foo")
+
     while True:
         #print(defaultDepth)
         settings.update()
@@ -387,11 +423,6 @@ def menu():
     pvai = partial(size, menu, 0, defaultDepth)
     avai = partial(size, menu, 1, defaultDepth)
     sett = partial(settingsMenu, menu)
-
-    #pvai = partial(inputSize, menu, 0)
-    #avai = partial(inputSize, menu, 1)
-    #pvai = partial(playerVsAI, menu, 3, 6)
-    #avai = partial(AIVsAI, menu, 3)
 
     head = Button(menu, text = "Tic-Tac-Toe",
                 activeforeground = 'blue',
