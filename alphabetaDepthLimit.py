@@ -4,7 +4,7 @@ def alphaBetaDepth(game, state, player, currDepth, maxDepth):
     return move
 
 def maxValueABDepth(game, state, player, alpha, beta, currDepth, maxDepth):
-    #Checks if board is in terminal state
+    # Check if board is in terminal state or maximum depth reached
     if game.isTerminal(state) or currDepth == maxDepth:
         return (game.utility(state, player), None)
     
@@ -17,15 +17,14 @@ def maxValueABDepth(game, state, player, alpha, beta, currDepth, maxDepth):
         if v2 > value:
             value = v2
             move = a
-            alpha = max([alpha, value])
+            alpha = max(alpha, value)
         if value >= beta:
             return (value, move)
-    #returns 
     return (value, move)
 
 def minValueABDepth(game, state, player, alpha, beta, currDepth, maxDepth):
     oppositePlayers = {1:2, 2:1}
-    #Checks if board is in terminal state
+    # Check if board is in terminal state or maximum depth reached
     if game.isTerminal(state) or currDepth == maxDepth:
         return (game.utility(state, player), None)
     
@@ -38,8 +37,7 @@ def minValueABDepth(game, state, player, alpha, beta, currDepth, maxDepth):
         if v2 < value:
             value = v2
             move = a
-            beta = min([beta, value])
+            beta = min(beta, value)
         if value <= alpha:
             return (value, move)
-    #returns 
     return (value, move)

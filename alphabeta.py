@@ -4,11 +4,11 @@ def alphaBeta(game, state, player):
     return move
 
 def maxValueAB(game, state, player, alpha, beta):
-    #Checks if board is in terminal state
+    # Check if board is in terminal state
     if game.isTerminal(state):
         return (game.utility(state, player), None)
     
-    value = -math.inf       # value = -infinty
+    value = -math.inf # value = -infinty
     actions = game.getActions(state)
     move = actions[0]
     #find best move for AI
@@ -17,19 +17,18 @@ def maxValueAB(game, state, player, alpha, beta):
         if v2 > value:
             value = v2
             move = a
-            alpha = max([alpha, value])
+            alpha = max(alpha, value)
         if value >= beta:
             return (value, move)
-    #returns 
     return (value, move)
 
 def minValueAB(game, state, player, alpha, beta):
     oppositePlayers = {1:2, 2:1}
-    #Checks if board is in terminal state
+    # Check if board is in terminal state
     if game.isTerminal(state):
         return (game.utility(state, player), None)
     
-    value = math.inf       # value = -infinty
+    value = math.inf # value = -infinty
     actions = game.getActions(state)
     move = actions[0]
     #find best move for AI
@@ -38,8 +37,7 @@ def minValueAB(game, state, player, alpha, beta):
         if v2 < value:
             value = v2
             move = a
-            beta = min([beta, value])
+            beta = min(beta, value)
         if value <= alpha:
             return (value, move)
-    #returns 
     return (value, move)
