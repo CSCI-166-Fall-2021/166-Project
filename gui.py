@@ -43,7 +43,7 @@ def getWinner(game):
     # Tie
     return 0
 
-def checkGameEnd(gameboard, game, type):
+def checkGameEnd(gameboard, game):
     if game.isTerminal(game.board):
         winner = getWinner(game)
         if winner == 0:
@@ -67,14 +67,11 @@ def placeMarker(gameboard, game, row, col, maxDepth):
     gameboard.update()
 
     # Check if game is over
-    checkGameEnd(gameboard, game, "pvai")
+    checkGameEnd(gameboard, game)
 
     # AI move
     l2.config(text="Thinking...")
     gameboard.update()
-    #aiAction = minimax(game, game.board, 2)
-    #aiAction = alphaBeta(game, game.board, 2)
-    #aiAction = alphaBetaDepth(game, game.board, 2, 1, maxDepth)
     aiAction = getAiAction(gameboard, game, 2, 1, maxDepth)
     l2.config(text="Computer : O")
     gameboard.update()
@@ -82,7 +79,7 @@ def placeMarker(gameboard, game, row, col, maxDepth):
     buttons[aiAction[0]][aiAction[1]].config(text="O")
 
     # Check if game is over
-    checkGameEnd(gameboard, game, "pvai")
+    checkGameEnd(gameboard, game)
 
     # Reenable buttons when it is player's turn again
     for i in range(game.size):
@@ -123,9 +120,6 @@ def drawBoard(gameboard, game, maxDepth):
     if firstTurnAI:
         l2.config(text="Thinking...")
         gameboard.update()
-        #aiAction = minimax(game, game.board, 2)``
-        #aiAction = alphaBeta(game, game.board, 2)
-        #aiAction = alphaBetaDepth(game, game.board, 2, 1, maxDepth)
         aiAction = getAiAction(gameboard, game, 2, 1, maxDepth)
         l2.config(text="Computer : O")
         gameboard.update()
@@ -136,11 +130,7 @@ def drawBoard(gameboard, game, maxDepth):
         for j in range(game.size):
             buttons[i][j].config(state=ACTIVE)
 
-    while True:
-        #print(game.board)
-        gameboard.update_idletasks()
-        gameboard.update()
-    #gameboard.mainloop()
+    gameboard.mainloop()
 
 def playerVsAI(gameboard, size, maxDepth):
     gameboard.destroy()
@@ -151,9 +141,9 @@ def playerVsAI(gameboard, size, maxDepth):
     global l2
     tictactoe = Game(size)
     l1 = Button(gameboard, text="Player : X", font=("OCR A Extended", 20), state = DISABLED)
-    l1.grid(row=1, columnspan=tictactoe.size, sticky="NSWE")
     l2 = Button(gameboard, text = "Computer : O",
                 state = DISABLED, font=("OCR A Extended", 20))
+    l1.grid(row=1, columnspan=tictactoe.size, sticky="NSWE")
     l2.grid(row = 2, columnspan=tictactoe.size, sticky="NSWE")
 
     gameboard.grid_rowconfigure(1, weight=1)
@@ -170,9 +160,9 @@ def AIVsAI(gameboard, size, maxDepth):
     global l1
     global l2
     l1 = Button(gameboard, text="Computer 1 : X", font=("OCR A Extended", 20), state = DISABLED)
-    l1.grid(row=1, columnspan=game.size, sticky="NSWE")
     l2 = Button(gameboard, text = "Computer 2 : O",
                 state = DISABLED, font=("OCR A Extended", 20))
+    l1.grid(row=1, columnspan=game.size, sticky="NSWE")
     l2.grid(row = 2, columnspan=game.size, sticky="NSWE")
 
     gameboard.grid_rowconfigure(1, weight=1)
@@ -196,9 +186,6 @@ def AIVsAI(gameboard, size, maxDepth):
         # AI move
         l1.config(text="Thinking...")
         gameboard.update()
-        #aiAction = minimax(game, game.board, 2)
-        #aiAction = alphaBeta(game, game.board, 1)
-        #aiAction = alphaBetaDepth(game, game.board, 1, 1, maxDepth)
         aiAction = getAiAction(gameboard, game, 1, 1, maxDepth)
         l1.config(text="Computer 1: X")
         gameboard.update()
@@ -212,9 +199,6 @@ def AIVsAI(gameboard, size, maxDepth):
         # AI move
         l2.config(text="Thinking...")
         gameboard.update()
-        #aiAction = minimax(game, game.board, 2)
-        #aiAction = alphaBeta(game, game.board, 2)
-        #aiAction = alphaBetaDepth(game, game.board, 2, 1, maxDepth)
         aiAction = getAiAction(gameboard, game, 2, 1, maxDepth)
         l2.config(text="Computer 2: O")
         gameboard.update()
@@ -309,6 +293,7 @@ def settingsMenu(menuWindow):
     settings.geometry("1080x720")
     settings.title("Settings")
 
+    # depth limit - +/-
     def lowerDepth():
         global defaultDepth
         defaultDepth -= 1
@@ -318,7 +303,6 @@ def settingsMenu(menuWindow):
         defaultDepth += 1
         currDepth.config(text=defaultDepth)
 
-    # depth limit - +/-
     depth = Button(settings, text="Depth Limit", state=DISABLED, font=font)
     minusDepth = Button(settings, text="-", font=font, command=lowerDepth)
     currDepth = Button(settings, text=defaultDepth, font=font)
@@ -329,24 +313,19 @@ def settingsMenu(menuWindow):
     currDepth.grid(row=1, column=4, columnspan=2, sticky="NSEW")
     plusDepth.grid(row=1, column=6, columnspan=2, sticky="NSEW")
 
+    # alpha beta - ON/OFF
     def alphaBetaOn():
-        global alphaBetaOption
+        global alphaBetaOption, ABOn, ABOff
         alphaBetaOption = True
-        global ABOn
         ABOn.config(state=DISABLED)
-        global ABOff
         ABOff.config(state=ACTIVE)
     def alphaBetaOff():
-        global alphaBetaOption
+        global alphaBetaOption, ABOn, ABOff
         alphaBetaOption = False
-        global ABOff
         ABOff.config(state=DISABLED)
-        global ABOn
         ABOn.config(state=ACTIVE)
 
-    # alpha beta - ON/OFF
-    global ABOn
-    global ABOff
+    global ABOn, ABOff
     ABButton = Button(settings, text="Alpha-Beta Pruning", state=DISABLED, font=font)
     ABOn = Button(settings, text="ON", state=DISABLED, font=font, command=alphaBetaOn)
     ABOff = Button(settings, text="OFF", font=font, command=alphaBetaOff)
@@ -357,22 +336,17 @@ def settingsMenu(menuWindow):
 
     # heuristic? - ON/OFF
     def heuristicOn():
-        global heuristicOption
+        global heuristicOption, heuristicON, heuristicOFF
         heuristicOption = True
-        global heuristicON
         heuristicON.config(state=DISABLED)
-        global heuristicOFF
         heuristicOFF.config(state=ACTIVE)
     def heuristicOff():
-        global heuristicOption
+        global heuristicOption, heuristicON, heuristicOFF
         heuristicOption = False
-        global heuristicON
         heuristicON.config(state=ACTIVE)
-        global heuristicOFF
         heuristicOFF.config(state=DISABLED)
 
-    global heuristicON
-    global heuristicOFF
+    global heuristicON, heuristicOFF
     heuristicButton = Button(settings, text="Heuristic", state=DISABLED, font=font)
     heuristicON = Button(settings, text="ON", state=DISABLED, font=font, command=heuristicOn)
     heuristicOFF = Button(settings, text="OFF", font=font, command=heuristicOff)
@@ -389,29 +363,20 @@ def settingsMenu(menuWindow):
     menuButton.grid(row=4, column=1, columnspan=7, sticky="NSEW")
 
     # row/col configure
-    settings.grid_rowconfigure(1, weight=1, uniform="foo")
-    settings.grid_rowconfigure(2, weight=1, uniform="foo")
-    settings.grid_rowconfigure(3, weight=1, uniform="foo")
-    settings.grid_rowconfigure(4, weight=1, uniform="foo")
+    for i in range(1, 5):
+        settings.grid_rowconfigure(i, weight=1, uniform="foo")
     settings.grid_columnconfigure(1, weight=10, uniform="foo")
-    settings.grid_columnconfigure(2, weight=1, uniform="foo")
-    settings.grid_columnconfigure(3, weight=1, uniform="foo")
-    settings.grid_columnconfigure(4, weight=1, uniform="foo")
-    settings.grid_columnconfigure(5, weight=1, uniform="foo")
-    settings.grid_columnconfigure(6, weight=1, uniform="foo")
-    settings.grid_columnconfigure(7, weight=1, uniform="foo")
+    for i in range(2, 8):
+        settings.grid_columnconfigure(i, weight=1, uniform="foo")
 
-    while True:
-        #print(defaultDepth)
-        settings.update()
-        settings.update_idletasks()
+    settings.mainloop()
 
 def menu():
     menu = Tk()
     menu.geometry("1080x720")
     menu.title("Tic Tac Toe")
 
-    global defaultDepth
+    global defaultDepth, font
 
     pvai = partial(size, menu, 0, defaultDepth)
     avai = partial(size, menu, 1, defaultDepth)
@@ -420,22 +385,22 @@ def menu():
     head = Button(menu, text = "Tic-Tac-Toe",
                 activeforeground = 'blue',
                 activebackground = "silver", bg = "white",
-                fg = "black", font = ("OCR A Extended", 40), state=DISABLED)
+                fg = "black", font = font, state=DISABLED)
     
     B1 = Button(menu, text = "Player vs. AI", command = pvai,
                 activeforeground = 'red',
                 activebackground = "silver", bg = "white",
-                fg = "black", font = ("OCR A Extended", 40))
+                fg = "black", font = font)
     
     B2 = Button(menu, text = "AI vs. AI", command = avai,
                 activeforeground = 'red',
                 activebackground = "silver", bg = "white",
-                fg = "black", font = ("OCR A Extended", 40))
+                fg = "black", font = font)
     
     B3 = Button(menu, text = "Settings", command = sett,
                 activeforeground = 'red',
                 activebackground = "silver", bg = "gray",
-                fg = "black", font = ("OCR A Extended", 40))
+                fg = "black", font = font)
     
     menu.grid_columnconfigure(1, weight=1)
     menu.grid_rowconfigure(1, weight=1)
