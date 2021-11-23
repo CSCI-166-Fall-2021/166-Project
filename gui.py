@@ -6,9 +6,12 @@ from copy import deepcopy
 import numpy as np
 import time
 
-from game import Game, minimax, maxValue, minValue, alphaBeta, maxValueAB, minValueAB, alphaBetaDepth, maxValueABDepth, minValueABDepth
-from game import minimaxDepth, minValueDepth, maxValueDepth
-from game import alphaBetaDepthHeuristic, minValueABDepthHeuristic, maxValueABDepthHeuristic
+from game import Game
+from minimax import minimax, minValue, maxValue
+from minimaxDepthLimit import minimaxDepth, minValueDepth, maxValueDepth
+from alphabeta import alphaBeta, minValueAB, maxValueAB
+from alphabetaDepthLimit import alphaBetaDepth, minValueABDepth, maxValueABDepth
+from alphabetaHeuristic import alphaBetaDepthHeuristic, minValueABDepthHeuristic, maxValueABDepthHeuristic
 
 global font 
 font = ("OCR A Extended", 40)
