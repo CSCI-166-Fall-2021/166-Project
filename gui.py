@@ -2,9 +2,7 @@ import tkinter as tk
 from tkinter import *
 from functools import partial
 from tkinter import messagebox
-from copy import deepcopy
 import numpy as np
-import time
 
 from game import Game
 from minimax import minimax, minValue, maxValue
@@ -13,13 +11,10 @@ from alphabeta import alphaBeta, minValueAB, maxValueAB
 from alphabetaDepthLimit import alphaBetaDepth, minValueABDepth, maxValueABDepth
 from alphabetaHeuristic import alphaBetaDepthHeuristic, minValueABDepthHeuristic, maxValueABDepthHeuristic
 
-#global font 
+# globals
 font = ("OCR A Extended", 40)
-#global defaultDepth 
 defaultDepth = 6
-#global alphaBetaOption
 alphaBetaOption = True
-#global heuristicOption
 heuristicOption = True
 
 def getWinner(game):
@@ -51,19 +46,14 @@ def getWinner(game):
 def checkGameEnd(gameboard, game, type):
     if game.isTerminal(game.board):
         winner = getWinner(game)
-        #gameboard.destroy()
         if winner == 0:
             box = messagebox.showinfo("Tie", "Tie Game")
-            gameboard.destroy()
-            menu()
         elif winner == 1:
-            box = messagebox.showinfo("Winner", "Player 1 Won")
-            gameboard.destroy()
-            menu()
+            box = messagebox.showinfo("Winner", "X Won")
         else:
-            box = messagebox.showinfo("Winner", "Player 2 Won")
-            gameboard.destroy()
-            menu()
+            box = messagebox.showinfo("Winner", "O Won")
+        gameboard.destroy()
+        menu()
             
 def placeMarker(gameboard, game, row, col, maxDepth):
     # Disable all buttons so player can't keep placing before AI makes its move

@@ -123,7 +123,6 @@ class Game:
         
         return possibleWins
 
-
 if __name__ == "__main__":
     tictactoe = Game(3)
     print("Initial Board:\n", tictactoe.board)
