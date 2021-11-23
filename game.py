@@ -8,7 +8,7 @@ from alphabetaHeuristic import alphaBetaDepthHeuristic, minValueABDepthHeuristic
 
 class Game:
     def __init__(self, size):
-        self.board = np.zeros([size, size])
+        self.board = np.zeros([size, size]) # initialize board to 0's
         self.size = size
     
     def checkMove(self, row, col):
