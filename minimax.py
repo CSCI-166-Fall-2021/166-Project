@@ -4,7 +4,7 @@ def minimax(game, state, player):
     return move
 
 def maxValue(game, state, player):
-    #Checks if board is in terminal state
+    # Check if board is in terminal state
     if game.isTerminal(state):
         return (game.utility(state, player), None)
     
