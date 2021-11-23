@@ -13,13 +13,13 @@ from alphabeta import alphaBeta, minValueAB, maxValueAB
 from alphabetaDepthLimit import alphaBetaDepth, minValueABDepth, maxValueABDepth
 from alphabetaHeuristic import alphaBetaDepthHeuristic, minValueABDepthHeuristic, maxValueABDepthHeuristic
 
-global font 
+#global font 
 font = ("OCR A Extended", 40)
-global defaultDepth 
+#global defaultDepth 
 defaultDepth = 6
-global alphaBetaOption
+#global alphaBetaOption
 alphaBetaOption = True
-global heuristicOption
+#global heuristicOption
 heuristicOption = True
 
 def getWinner(game):
