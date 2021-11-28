@@ -13,7 +13,7 @@ def maxValueDepth(game, state, player, currDepth, maxDepth):
     move = actions[0]
     #find best move for AI
     for a in actions:
-        v2, a2 = minValueDepth(game, game.result(state, a, player), player, currDepth, maxDepth)
+        v2, a2 = minValueDepth(game, game.result(state, a, player), player, currDepth+1, maxDepth)
         if v2 > value:
             value = v2
             move = a
@@ -29,7 +29,7 @@ def minValueDepth(game, state, player, currDepth, maxDepth):
     move = actions[0]
     value = math.inf   # value = infinity
     for a in actions:
-        v2, a2 = maxValueDepth(game, game.result(state, a, oppositePlayers[player]), player, currDepth, maxDepth)
+        v2, a2 = maxValueDepth(game, game.result(state, a, oppositePlayers[player]), player, currDepth+1, maxDepth)
         if v2 < value:
             value = v2
             move = a 

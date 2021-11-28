@@ -194,7 +194,7 @@ def AIVsAI(gameboard, size, maxDepth):
         gameboard.update()
 
         # Check if game is over
-        checkGameEnd(gameboard, game, "")
+        checkGameEnd(gameboard, game)
 
         # AI move
         l2.config(text="Thinking...")
@@ -207,7 +207,7 @@ def AIVsAI(gameboard, size, maxDepth):
         gameboard.update()
 
         # Check if game is over
-        checkGameEnd(gameboard, game, "")
+        checkGameEnd(gameboard, game)
 
 def size(menu, choice, maxDepth):
     menu.destroy()
