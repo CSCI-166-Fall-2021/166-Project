@@ -3,6 +3,7 @@ from tkinter import *
 from functools import partial
 from tkinter import messagebox
 import numpy as np
+import time
 
 from game import Game
 from minimax import minimax, minValue, maxValue
@@ -192,6 +193,7 @@ def AIVsAI(gameboard, size, maxDepth):
         game.board[aiAction[0]][aiAction[1]] = 1
         buttons[aiAction[0]][aiAction[1]].config(text="X")
         gameboard.update()
+        time.sleep(0.4)
 
         # Check if game is over
         checkGameEnd(gameboard, game)
@@ -205,6 +207,7 @@ def AIVsAI(gameboard, size, maxDepth):
         game.board[aiAction[0]][aiAction[1]] = 2
         buttons[aiAction[0]][aiAction[1]].config(text="O")
         gameboard.update()
+        time.sleep(0.4)
 
         # Check if game is over
         checkGameEnd(gameboard, game)
