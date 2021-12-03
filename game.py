@@ -19,6 +19,7 @@ class Game:
             return False
         return True
     
+    # A simple display of the tic-tac-toe board
     def display(self):
         n = self.size
         for i in range(n):
@@ -30,16 +31,17 @@ class Game:
                 else:
                      print("X", end=' ')               
             print() 
-    
+    # Returns true if the board is a terminal state
     def isTerminal(self, state):
         return self.checkRowsCols(state) or self.checkDiagonals(state) or self.checkFull(state)
     
+    # Returns true of a row is filled with X's or O's
     def checkValues(self, list):
         temp = set(list)
         if (len(temp)) == 1: # If row only has one symbol
             if not(list[0] == 0): # If row is not empty
                 return True # Either filled with x's or o's
-
+    
     def checkRowsCols(self, state):
         # Check rows in self.board and cols using transpose
         for board in [state, np.transpose(state)]:
@@ -60,18 +62,20 @@ class Game:
         diagonal2 = [state[self.size - 1 - i][i] for i in range(self.size)]
 
         return self.checkValues(diagonal1) or self.checkValues(diagonal2)
-
+    
+    # Checks if board has any open spaces left
     def checkFull(self, state):
         return not(0 in state)
             
-    #Returns possible action for player
+    # Returns possible action for player
     def getActions(self, state):
         # Check if (i, j) is a 0
         possibleActions = [(i, j) for i in range(self.size) for j in range(self.size) if state[i][j] == 0]
         
         #Return actions here 
         return possibleActions
-
+    
+    # Reurns the reward value
     def utility(self, state, player):
         # Row/Col filled
         for board in [state, np.transpose(state)]:
@@ -95,16 +99,18 @@ class Game:
                 return 100
             else:
                 return -100
-
         # Tie
         return 0
-
+    
+    # Returns the updated board after an action is taken
     def result(self, state, action, player):
         newState = state.copy()
         (i, j) = action
         newState[i][j] = player
         return newState
-
+    
+    # Heuristic used for determining how many possible wins there are for a player
+    # Used in alphaBetaHeuristic
     def heuristic(self, state, player):
         # number of possible winning rows/cols/diagonals
         oppositePlayers = {1:2, 2:1}
